@@ -6,11 +6,11 @@
   Map Example:
 
   (0,0)
-   	['P', 'P', 'P', 'C', 'P'],
-	  ['P', 'M', 'P', 'C', 'P'],
-	  ['P', 'M', 'P', 'C', 'P'],
-	  ['P', 'M', 'P', 'P', 'P'],
-	  ['P', 'M', 'P', 'P', 'P']
+      ['P', 'P', 'P', 'C', 'P'],
+    ['P', 'M', 'P', 'C', 'P'],
+    ['P', 'M', 'P', 'C', 'P'],
+    ['P', 'M', 'P', 'P', 'P'],
+    ['P', 'M', 'P', 'P', 'P']
                           (4,4)
 
   Details:
@@ -47,16 +47,16 @@
   - https://en.wikipedia.org/wiki/Dijkstra's_algorithm
 */
 const TERRAIN_TYPES = {
-	'P': {
-  	obstacle: false,
+  'P': {
+    obstacle: false,
     description: 'plains'
   },
   'M': {
-  	obstacle: true,
+    obstacle: true,
     description: 'mountains'
   },
   'C': {
-  	obstacle: true,
+    obstacle: true,
     description: 'crevasse'
   }
 };
@@ -66,16 +66,16 @@ const STATUS_CODES = ['OK', 'OBSTACLE', 'INVALID_COMMAND'];
 // top left corner is (X:0, Y:0)
 // bottom right is (X:4, Y:4)
 const WORLD = [
-	['P', 'P', 'P', 'C', 'P'],
-	['P', 'M', 'P', 'C', 'P'],
-	['P', 'M', 'P', 'C', 'P'],
-	['P', 'M', 'P', 'P', 'P'],
-	['P', 'M', 'P', 'P', 'P']
+  ['P', 'P', 'P', 'C', 'P'],
+  ['P', 'M', 'P', 'C', 'P'],
+  ['P', 'M', 'P', 'C', 'P'],
+  ['P', 'M', 'P', 'P', 'P'],
+  ['P', 'M', 'P', 'P', 'P']
 ];
 
 const DIRECTIONS = ['N', 'S', 'E', 'W'];
-const DIRECTION_FROM_DEGREES = {0:'N',90:'E',180:'S',270:'W'};//map degrees to direction
-const DEGREES_FROM_DIRECTION = {'N':0,'E':90,'S':180,'W':270};//map direction to degrees
+const DIRECTION_FROM_DEGREES = { 0: 'N', 90: 'E', 180: 'S', 270: 'W' };//map degrees to direction
+const DEGREES_FROM_DIRECTION = { 'N': 0, 'E': 90, 'S': 180, 'W': 270 };//map direction to degrees
 const COMMANDS = ['L', 'R', 'F', 'B'];
 
 // Start: Exercise Code (Your Code)
@@ -83,114 +83,114 @@ const COMMANDS = ['L', 'R', 'F', 'B'];
 // YOUR CODE BELOW
 // NOTE: cntrl + enter to run tests
 // Note: integrated firebug for console logs
-export default class Rover {  
-	location=[0,0];//store the location as X,Y coordinates
-  direction='N';//store the direction as a 'N','S','E','W' value
-  degrees=0;//store the current direction the rover is facing in degrees 0-360
-  commands=[];//store the history of commands
-  lastXOrY='X';//store most recent axis that was attempted in case obstacle is located
-  lastValue=0;//store most recent amount that was attempted in case obstacle is located
-	constructor(location, direction) {
-	  let status=STATUS_CODES[0];//default OK status -- changes if invalid commands are passed
-		!Array.isArray(location) && (status=STATUS_CODES[2]);//INVALID_COMMAND : location is not in array format
-    !DIRECTIONS.includes(direction) && (status=STATUS_CODES[2]);//INVALID_COMMAND: direction not valid
-    if (status==STATUS_CODES[0]){//Passes validation: assign location and degrees based on constructor values 
-	  	this.location=location
-  	  this.degrees=DEGREES_FROM_DIRECTION[direction];
-      this.direction=direction;
+export default class Rover {
+  location = [0, 0];//store the location as X,Y coordinates
+  direction = 'N';//store the direction as a 'N','S','E','W' value
+  degrees = 0;//store the current direction the rover is facing in degrees 0-360
+  commands = [];//store the history of commands
+  lastXOrY = 'X';//store most recent axis that was attempted in case obstacle is located
+  lastValue = 0;//store most recent amount that was attempted in case obstacle is located
+  constructor(location, direction) {
+    let status = STATUS_CODES[0];//default OK status -- changes if invalid commands are passed
+    !Array.isArray(location) && (status = STATUS_CODES[2]);//INVALID_COMMAND : location is not in array format
+    !DIRECTIONS.includes(direction) && (status = STATUS_CODES[2]);//INVALID_COMMAND: direction not valid
+    if (status == STATUS_CODES[0]) {//Passes validation: assign location and degrees based on constructor values 
+      this.location = location
+      this.degrees = DEGREES_FROM_DIRECTION[direction];
+      this.direction = direction;
     }
   }
   command(newCommands) {
-    let status=STATUS_CODES[0];//default OK status -- changes if invalid commands are passed
-  	!Array.isArray(newCommands) && (status=STATUS_CODES[2]);//INVALID_COMMAND
-  	const validCommands=newCommands.filter(newCommand=>COMMANDS.includes(newCommand));//filter only valid commands
-  	this.commands.push(...validCommands);
-    validCommands.length!==newCommands.length && (status=STATUS_CODES[2]);//INVALID_COMMAND -- //fail and return INVALID_COMMAND if any invalid commands sent
-    validCommands.forEach(validCommand=>{
-    	switch(validCommand){
+    let status = STATUS_CODES[0];//default OK status -- changes if invalid commands are passed
+    !Array.isArray(newCommands) && (status = STATUS_CODES[2]);//INVALID_COMMAND
+    const validCommands = newCommands.filter(newCommand => COMMANDS.includes(newCommand));//filter only valid commands
+    this.commands.push(...validCommands);
+    validCommands.length !== newCommands.length && (status = STATUS_CODES[2]);//INVALID_COMMAND -- //fail and return INVALID_COMMAND if any invalid commands sent
+    validCommands.forEach(validCommand => {
+      switch (validCommand) {
 
         //The unit tests made the assumption that Left/Right simply rotates, without forward movement
         // The unit tests made the assumption that going North means decreasing in the Y direction
 
-      	case 'L':
-        	this.degrees-=90;//shift 90 degrees counter-clockwise
-        	break;
+        case 'L':
+          this.degrees -= 90;//shift 90 degrees counter-clockwise
+          break;
         case 'R':
-        	this.degrees+=90;//shift 90 degrees clockwise
-					break;
+          this.degrees += 90;//shift 90 degrees clockwise
+          break;
         case 'F'://no change in direction
-            switch(this.degrees){
-              case 0://North
-                this.location[1]>0 || (status=STATUS_CODES[1]);//OBSTACLE -- fail if at the top of the map
-                this.location[1]>0 && this.move('Y',-1);//(this.location[1]-=1);//shift North one
-                break;
-              case 90://East
-                this.location[0]<4 || (status=STATUS_CODES[1]);//OBSTACLE -- fail if at the right edge of the map
-                this.location[0]<4 && this.move('X',1);//(this.location[0]+=1);//shift East one 
-                break;
-              case 180://South
-                this.location[1]<4 || (status=STATUS_CODES[1]);//OBSTACLE -- fail if at the bottom of the map
-                this.location[1] <4 && this.move('Y',1);//(this.location[1]+=1);//shift South one
-                break
-              case 270://West
-                this.location[0]>0 || (status=STATUS_CODES[1]);//OBSTACLE -- fail if at the left edge of the map
-                this.location[0]>0 && this.move('X',-1);//(this.location[0]-=1);//shift West one
-                break;
-            }     
-        	break;
-        case 'B'://go in reverse
-          switch(this.degrees){
+          switch (this.degrees) {
             case 0://North
-              this.location[1]<4 || (status=STATUS_CODES[1]);//OBSTACLE -- fail if at the bottom of the map
-              this.location[1]<4 && this.move('Y',1);//(this.location[1]+=1);//shift south one
+              this.location[1] > 0 || (status = STATUS_CODES[1]);//OBSTACLE -- fail if at the top of the map
+              this.location[1] > 0 && this.move('Y', -1);//(this.location[1]-=1);//shift North one
               break;
             case 90://East
-              this.location[0]>0 || (status=STATUS_CODES[1]);//OBSTACLE -- fail if at the left edge of the map  
-              this.location[0]>0 && this.move('X',-1);//(this.location[0]-=1);//shift West one 
+              this.location[0] < 4 || (status = STATUS_CODES[1]);//OBSTACLE -- fail if at the right edge of the map
+              this.location[0] < 4 && this.move('X', 1);//(this.location[0]+=1);//shift East one 
               break;
             case 180://South
-              this.location[1]>0 || (status=STATUS_CODES[1]);//OBSTACLE -- fail if at the top of the map
-              this.location[1] > 0 && this.move('Y',-1);//(this.location[1]-=1);//shift North one
+              this.location[1] < 4 || (status = STATUS_CODES[1]);//OBSTACLE -- fail if at the bottom of the map
+              this.location[1] < 4 && this.move('Y', 1);//(this.location[1]+=1);//shift South one
               break
             case 270://West
-              this.location[0]<4 || (status=STATUS_CODES[1]);//OBSTACLE -- fail if at the right edge of the map
-              this.location[0]<4 && this.move('X',1);//(this.location[0]+=1);//shift East one
+              this.location[0] > 0 || (status = STATUS_CODES[1]);//OBSTACLE -- fail if at the left edge of the map
+              this.location[0] > 0 && this.move('X', -1);//(this.location[0]-=1);//shift West one
               break;
-          }     
-          break;      
+          }
+          break;
+        case 'B'://go in reverse
+          switch (this.degrees) {
+            case 0://North
+              this.location[1] < 4 || (status = STATUS_CODES[1]);//OBSTACLE -- fail if at the bottom of the map
+              this.location[1] < 4 && this.move('Y', 1);//(this.location[1]+=1);//shift south one
+              break;
+            case 90://East
+              this.location[0] > 0 || (status = STATUS_CODES[1]);//OBSTACLE -- fail if at the left edge of the map  
+              this.location[0] > 0 && this.move('X', -1);//(this.location[0]-=1);//shift West one 
+              break;
+            case 180://South
+              this.location[1] > 0 || (status = STATUS_CODES[1]);//OBSTACLE -- fail if at the top of the map
+              this.location[1] > 0 && this.move('Y', -1);//(this.location[1]-=1);//shift North one
+              break
+            case 270://West
+              this.location[0] < 4 || (status = STATUS_CODES[1]);//OBSTACLE -- fail if at the right edge of the map
+              this.location[0] < 4 && this.move('X', 1);//(this.location[0]+=1);//shift East one
+              break;
+          }
+          break;
       }
-      this.degrees<0 && (this.degrees+=360);//convert from negative to positive, (ex: -90 becomes 270/West)
-      this.degrees>360 && (this.degrees-=360);//convert from over 360 to a standard direction (ex: 450 becomes 90/East)
-      this.direction=DIRECTION_FROM_DEGREES[this.degrees];//update the direction based on the degrees
-      if(TERRAIN_TYPES[WORLD[this.location[1]][this.location[0]]].obstacle){//check if the new location is an obstacle
-        status=STATUS_CODES[1];//OBSTACLE
+      this.degrees < 0 && (this.degrees += 360);//convert from negative to positive, (ex: -90 becomes 270/West)
+      this.degrees > 360 && (this.degrees -= 360);//convert from over 360 to a standard direction (ex: 450 becomes 90/East)
+      this.direction = DIRECTION_FROM_DEGREES[this.degrees];//update the direction based on the degrees
+      if (TERRAIN_TYPES[WORLD[this.location[1]][this.location[0]]].obstacle) {//check if the new location is an obstacle
+        status = STATUS_CODES[1];//OBSTACLE
         this.undo();//undo the last move
       }
     })
-		const returnStatus={
-    	status,
-      loc:this.location,
-      dir:DIRECTION_FROM_DEGREES[this.degrees],
+    const returnStatus = {
+      status,
+      loc: this.location,
+      dir: DIRECTION_FROM_DEGREES[this.degrees],
     };
     console.log(`Return status ${JSON.stringify(returnStatus)}`);
     return returnStatus;
   }
 
-  move(xOrY,value){
-    this.lastXOrY=xOrY;
-    this.lastValue=value;
-    if(xOrY==='X'){
-      this.location[0]+=value;
-    }else if(xOrY==='Y'){
-      this.location[1]+=value;
-    }    
+  move(xOrY, value) {
+    this.lastXOrY = xOrY;
+    this.lastValue = value;
+    if (xOrY === 'X') {
+      this.location[0] += value;
+    } else if (xOrY === 'Y') {
+      this.location[1] += value;
+    }
   }
 
-  undo(){
-    if(this.lastXOrY==='X'){
-      this.location[0]-=this.lastValue;
-    }else if(this.lastXOrY==='Y'){
-      this.location[1]-=this.lastValue;
+  undo() {
+    if (this.lastXOrY === 'X') {
+      this.location[0] -= this.lastValue;
+    } else if (this.lastXOrY === 'Y') {
+      this.location[1] -= this.lastValue;
     }
   }
 }
